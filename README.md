@@ -8,6 +8,8 @@ This repository contains my notes and experience while setting up **Google Cloud
 
 ### 1. Override Job Configuration for a Specific Execution
 
+- Cloud Run Jobs - Task Timeout: [Task Timeout](https://cloud.google.com/run/docs/configuring/task-timeout#gcloud)
+- Client Library HOW TO: [Client Library 101](https://github.com/googleapis/gax-nodejs/blob/main/client-libraries.md#long-running-operations)
 - Documentation: [Override Job Config](https://cloud.google.com/run/docs/execute/jobs#override-job-configuration)
 - Node.js API reference: [JobsClient `runJob` overrides](https://cloud.google.com/nodejs/docs/reference/run/latest/run/protos.google.cloud.run.v2.runjobrequest.ioverrides)
 
@@ -132,6 +134,7 @@ process.exit(0);
 
 - Determines the number of tasks required
 - Launches the worker job programmatically with overrides
+- It self has a max-retry of 0. If the job-dispatcher fails, then we do not retry it.
 - Uses environment variables to distribute work
 
 ```js
