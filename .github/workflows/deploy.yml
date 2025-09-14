@@ -33,8 +33,6 @@ jobs:
       - name: Log environment variables (non-secrets only)
         run: |
           echo "===== Listing environment variables ====="
-          echo "PROJECT_ID=$PROJECT_ID"
-          echo "REGION=$REGION"
           echo "REPO_NAME=$REPO_NAME"
           echo "IMAGE_NAME=$IMAGE_NAME"
           echo "WORKER_JOB_NAME=$WORKER_JOB_NAME"
