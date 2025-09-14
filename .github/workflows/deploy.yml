@@ -9,12 +9,13 @@ env:
   REGION: ${{ secrets.GCP_REGION }}
   REPO_NAME: cloud-run-jobs
   IMAGE_NAME: jobs-image
-  WORKER_JOB_NAME: ${{ vars.WORKER_JOB_NAME }}
-  TOTAL_TASK_COUNT: ${{ vars.TOTAL_TASK_COUNT }}
-  PARALLEL_TASKS: ${{ vars.PARALLEL_TASKS }}
+  WORKER_JOB_NAME: ${{ env.WORKER_JOB_NAME }}
+  TOTAL_TASK_COUNT: ${{ env.TOTAL_TASK_COUNT }}
+  PARALLEL_TASKS: ${{ env.PARALLEL_TASKS }}
 
 jobs:
   deploy:
+    environment: PRODUCTION # <-- this links to your PRODUCTION environment
     runs-on: ubuntu-latest
 
     steps:
@@ -62,7 +63,7 @@ jobs:
               --image $IMAGE_URI \
               --region $REGION \
               --tasks=1 \
-              --parallelism=1 \
+              --parallelism=$PARALLEL_TASKS \
               --command "node" \
               --args "worker.js"
           else
