@@ -9,9 +9,6 @@ env:
   REGION: ${{ secrets.GCP_REGION }}
   REPO_NAME: cloud-run-jobs
   IMAGE_NAME: jobs-image
-  WORKER_JOB_NAME: ${{ env.WORKER_JOB_NAME }}
-  TOTAL_TASK_COUNT: ${{ env.TOTAL_TASK_COUNT }}
-  PARALLEL_TASKS: ${{ env.PARALLEL_TASKS }}
 
 jobs:
   deploy:
