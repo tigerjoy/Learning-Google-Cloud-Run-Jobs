@@ -67,6 +67,7 @@ jobs:
             gcloud run jobs update worker-job \
               --image $IMAGE_URI \
               --region $REGION \
+              --parallelism=$PARALLEL_TASKS \
               --command "node" \
               --args "worker.js"
           fi
