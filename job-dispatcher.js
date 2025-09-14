@@ -6,14 +6,17 @@ const PROJECT_ID = process.env.PROJECT_ID;
 const REGION = process.env.REGION || "us-central1";
 const WORKER_JOB_NAME = process.env.WORKER_JOB_NAME || "worker-job";
 const TOTAL_TASK_COUNT = parseInt(process.env.TOTAL_TASK_COUNT || "10", 10);
-const PARALLEL_TASKS = parseInt(process.env.PARALLEL_TASKS || "2", 10);
+// NOTE: Parallelism cannot be overridden
+// const PARALLEL_TASKS = parseInt(process.env.PARALLEL_TASKS || "2", 10);
 
 async function main() {
   const client = new JobsClient();
   const jobPath = client.jobPath(PROJECT_ID, REGION, WORKER_JOB_NAME);
 
   console.log(
-    `Dispatcher launching ${WORKER_JOB_NAME} with ${TOTAL_TASK_COUNT} tasks (parallelism=${PARALLEL_TASKS})`
+    // NOTE: Parallelism cannot be overridden
+    // `Dispatcher launching ${WORKER_JOB_NAME} with ${TOTAL_TASK_COUNT} tasks (parallelism=${PARALLEL_TASKS})`
+    `Dispatcher launching ${WORKER_JOB_NAME} with ${TOTAL_TASK_COUNT} tasks`
   );
 
   // Fire-and-forget: don’t wait for job execution to finish
@@ -21,7 +24,8 @@ async function main() {
     name: jobPath,
     overrides: {
       taskCount: TOTAL_TASK_COUNT,
-      parallelism: PARALLEL_TASKS,
+      // NOTE: Parallelism cannot be overridden
+      // parallelism: PARALLEL_TASKS,
       containerOverrides: [
         {
           env: [{ name: "TOTAL_TASK_COUNT", value: String(TOTAL_TASK_COUNT) }],
