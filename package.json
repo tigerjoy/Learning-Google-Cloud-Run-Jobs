@@ -3,12 +3,14 @@
   "version": "1.0.0",
   "description": "",
   "main": "worker.js",
+  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@google-cloud/run": "^3.0.0"
+    "@google-cloud/run": "^3.0.0",
+    "dotenv": "^17.2.2"
   }
 }

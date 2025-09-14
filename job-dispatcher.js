@@ -1,8 +1,9 @@
 // job-dispatcher.js
 import { JobsClient } from "@google-cloud/run";
+import "dotenv/config";
 
-const PROJECT_ID = process.env.GCP_PROJECT;
-const REGION = process.env.GCP_REGION || "us-central1";
+const PROJECT_ID = process.env.PROJECT_ID;
+const REGION = process.env.REGION || "us-central1";
 const WORKER_JOB_NAME = process.env.WORKER_JOB_NAME || "worker-job";
 const TOTAL_TASK_COUNT = parseInt(process.env.TOTAL_TASK_COUNT || "10", 10);
 const PARALLEL_TASKS = parseInt(process.env.PARALLEL_TASKS || "2", 10);
