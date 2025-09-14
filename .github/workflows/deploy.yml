@@ -28,9 +28,27 @@ jobs:
 
       - name: Build and push image
         run: |
+          # Full image URI
           IMAGE_URI=$REGION-docker.pkg.dev/$PROJECT_ID/$REPO_NAME/$IMAGE_NAME:latest
+
+          # Check if Artifact Registry repo exists
+          REPO_EXISTS=$(gcloud artifacts repositories list --location=$REGION --filter="name:$REPO_NAME" --format="value(name)")
+
+          if [ -z "$REPO_EXISTS" ]; then
+            echo "Repository $REPO_NAME does not exist. Creating..."
+            gcloud artifacts repositories create $REPO_NAME \
+              --repository-format=docker \
+              --location=$REGION \
+              --description="Docker images for Cloud Run Jobs"
+          else
+            echo "Repository $REPO_NAME already exists."
+          fi
+
+          # Build and push Docker image
           docker build -t $IMAGE_URI .
           docker push $IMAGE_URI
+
+          # Save IMAGE_URI for next steps
           echo "IMAGE_URI=$IMAGE_URI" >> $GITHUB_ENV
 
       - name: Deploy Worker Job
