@@ -73,7 +73,9 @@ jobs:
               --image $IMAGE_URI \
               --region $REGION \
               --tasks=1 \
+              --task-timeout=3600 \
               --parallelism=$PARALLEL_TASKS \
+              --max-retries=3 \
               --command "node" \
               --args "worker.js"
           else
@@ -92,6 +94,8 @@ jobs:
             gcloud run jobs create dispatcher-job \
               --image $IMAGE_URI \
               --region $REGION \
+              --max-retries=0 \
+              --task-timeout=36000 \
               --tasks=1 \
               --parallelism=1 \
               --command "node" \
