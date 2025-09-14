@@ -12,8 +12,8 @@ env:
 
 jobs:
   deploy:
-    environment: PRODUCTION # <-- this links to your PRODUCTION environment
     runs-on: ubuntu-latest
+    environment: PRODUCTION # <-- this links to your PRODUCTION environment
 
     steps:
       - name: Checkout repo
@@ -27,11 +27,17 @@ jobs:
       - name: Configure Docker for Artifact Registry
         run: gcloud auth configure-docker $REGION-docker.pkg.dev --quiet
 
-      - name: Log all environment variables
+      - name: Log environment variables (non-secrets only)
         run: |
-          echo "===== Listing all environment variables ====="
-          printenv | sort
-          echo "============================================"
+          echo "===== Listing environment variables ====="
+          echo "PROJECT_ID=$PROJECT_ID"
+          echo "REGION=$REGION"
+          echo "REPO_NAME=$REPO_NAME"
+          echo "IMAGE_NAME=$IMAGE_NAME"
+          echo "WORKER_JOB_NAME=$WORKER_JOB_NAME"
+          echo "TOTAL_TASK_COUNT=$TOTAL_TASK_COUNT"
+          echo "PARALLEL_TASKS=$PARALLEL_TASKS"
+          echo "========================================"
 
       - name: Build and push image
         run: |
