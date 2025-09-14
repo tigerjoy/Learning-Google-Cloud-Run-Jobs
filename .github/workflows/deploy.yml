@@ -6,9 +6,12 @@ on:
 
 env:
   PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
-  REGION: us-central1
+  REGION: ${{ secrets.GCP_REGION }}
   REPO_NAME: cloud-run-jobs
   IMAGE_NAME: jobs-image
+  WORKER_JOB_NAME: ${{ vars.WORKER_JOB_NAME }}
+  TOTAL_TASK_COUNT: ${{ vars.TOTAL_TASK_COUNT }}
+  PARALLEL_TASKS: ${{ vars.PARALLEL_TASKS }}
 
 jobs:
   deploy:
@@ -81,12 +84,12 @@ jobs:
               --parallelism=1 \
               --command "node" \
               --args "job-dispatcher.js" \
-              --set-env-vars WORKER_JOB_NAME=worker-job,TOTAL_TASK_COUNT=10,PARALLEL_TASKS=2
+              --set-env-vars PROJECT_ID=$PROJECT_ID,REGION=$REGION,WORKER_JOB_NAME=$WORKER_JOB_NAME,TOTAL_TASK_COUNT=$TOTAL_TASK_COUNT,PARALLEL_TASKS=$PARALLEL_TASKS
           else
             gcloud run jobs update dispatcher-job \
               --image $IMAGE_URI \
               --region $REGION \
               --command "node" \
               --args "job-dispatcher.js" \
-              --set-env-vars WORKER_JOB_NAME=worker-job,TOTAL_TASK_COUNT=10,PARALLEL_TASKS=2
+              --set-env-vars PROJECT_ID=$PROJECT_ID,REGION=$REGION,WORKER_JOB_NAME=$WORKER_JOB_NAME,TOTAL_TASK_COUNT=$TOTAL_TASK_COUNT,PARALLEL_TASKS=$PARALLEL_TASKS
           fi
