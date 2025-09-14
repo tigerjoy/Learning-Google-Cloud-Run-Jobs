@@ -19,8 +19,7 @@ async function main() {
     `Dispatcher launching ${WORKER_JOB_NAME} with ${TOTAL_TASK_COUNT} tasks`
   );
 
-  // Fire-and-forget: don’t wait for job execution to finish
-  await client.runJob({
+  const request = {
     name: jobPath,
     overrides: {
       taskCount: TOTAL_TASK_COUNT,
@@ -32,9 +31,24 @@ async function main() {
         },
       ],
     },
-  });
+  };
 
-  console.log(`Worker job dispatched. Dispatcher exiting.`);
+  // Fire-and-forget: don’t wait for job execution to finish
+  // await client.runJob(request);
+  // console.log(`Worker job dispatched. Dispatcher exiting.`);
+
+  // Wait for the job execution to finish
+  const [operation] = await client.runJob(request);
+  console.log(
+    `Worker job dispatched. Dispatcher will now wait for all jobs to complete.`
+  );
+  const [response] = await operation.promise();
+
+  console.log(
+    `Job ${WORKER_JOB_NAME} completed with response ${JSON.stringify(
+      response
+    )}. Dispatcher will now exit.`
+  );
 }
 
 main().catch(err => {
