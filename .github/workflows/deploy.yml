@@ -9,6 +9,9 @@ env:
   REGION: ${{ secrets.GCP_REGION }}
   REPO_NAME: cloud-run-jobs
   IMAGE_NAME: jobs-image
+  WORKER_JOB_NAME: ${{ vars.WORKER_JOB_NAME }}
+  TOTAL_TASK_COUNT: ${{ vars.TOTAL_TASK_COUNT }}
+  PARALLEL_TASKS: ${{ vars.PARALLEL_TASKS }}
 
 jobs:
   deploy:
@@ -26,18 +29,6 @@ jobs:
 
       - name: Configure Docker for Artifact Registry
         run: gcloud auth configure-docker $REGION-docker.pkg.dev --quiet
-
-      - name: Log environment variables (non-secrets only)
-        run: |
-          echo "===== Listing environment variables ====="
-          echo "PROJECT_ID=$PROJECT_ID"
-          echo "REGION=$REGION"
-          echo "REPO_NAME=$REPO_NAME"
-          echo "IMAGE_NAME=$IMAGE_NAME"
-          echo "WORKER_JOB_NAME=$WORKER_JOB_NAME"
-          echo "TOTAL_TASK_COUNT=$TOTAL_TASK_COUNT"
-          echo "PARALLEL_TASKS=$PARALLEL_TASKS"
-          echo "========================================"
 
       - name: Build and push image
         run: |
