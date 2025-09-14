@@ -1,0 +1,74 @@
+name: Deploy Cloud Run Jobs
+
+on:
+  push:
+    branches: ["main"]
+
+env:
+  PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+  REGION: us-central1
+  REPO_NAME: cloud-run-jobs
+  IMAGE_NAME: jobs-image
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - name: Configure Docker for Artifact Registry
+        run: gcloud auth configure-docker $REGION-docker.pkg.dev --quiet
+
+      - name: Build and push image
+        run: |
+          IMAGE_URI=$REGION-docker.pkg.dev/$PROJECT_ID/$REPO_NAME/$IMAGE_NAME:latest
+          docker build -t $IMAGE_URI .
+          docker push $IMAGE_URI
+          echo "IMAGE_URI=$IMAGE_URI" >> $GITHUB_ENV
+
+      - name: Deploy Worker Job
+        run: |
+          gcloud run jobs describe worker-job --region $REGION || EXISTS=false
+          if [ "$EXISTS" = false ]; then
+            gcloud run jobs create worker-job \
+              --image $IMAGE_URI \
+              --region $REGION \
+              --tasks=1 \
+              --parallelism=1 \
+              --command "node" \
+              --args "worker.js"
+          else
+            gcloud run jobs update worker-job \
+              --image $IMAGE_URI \
+              --region $REGION \
+              --command "node" \
+              --args "worker.js"
+          fi
+
+      - name: Deploy Dispatcher Job
+        run: |
+          gcloud run jobs describe dispatcher-job --region $REGION || EXISTS=false
+          if [ "$EXISTS" = false ]; then
+            gcloud run jobs create dispatcher-job \
+              --image $IMAGE_URI \
+              --region $REGION \
+              --tasks=1 \
+              --parallelism=1 \
+              --command "node" \
+              --args "job-dispatcher.js" \
+              --set-env-vars WORKER_JOB_NAME=worker-job,TOTAL_TASK_COUNT=10,PARALLEL_TASKS=2
+          else
+            gcloud run jobs update dispatcher-job \
+              --image $IMAGE_URI \
+              --region $REGION \
+              --command "node" \
+              --args "job-dispatcher.js" \
+              --set-env-vars WORKER_JOB_NAME=worker-job,TOTAL_TASK_COUNT=10,PARALLEL_TASKS=2
+          fi
