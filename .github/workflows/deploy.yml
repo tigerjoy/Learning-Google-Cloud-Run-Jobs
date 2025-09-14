@@ -27,6 +27,12 @@ jobs:
       - name: Configure Docker for Artifact Registry
         run: gcloud auth configure-docker $REGION-docker.pkg.dev --quiet
 
+      - name: Log all environment variables
+        run: |
+          echo "===== Listing all environment variables ====="
+          printenv | sort
+          echo "============================================"
+
       - name: Build and push image
         run: |
           # Full image URI
