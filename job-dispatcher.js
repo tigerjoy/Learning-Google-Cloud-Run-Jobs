@@ -42,6 +42,9 @@ async function main() {
   console.log(
     `Worker job dispatched. Dispatcher will now wait for all jobs to complete.`
   );
+
+  // If any one of the task in the job fails after the maxRetries is
+  // reached, then the promise rejects and an error is thrown by the rejection
   const [response] = await operation.promise();
 
   console.log(
@@ -53,5 +56,9 @@ async function main() {
 
 main().catch(err => {
   console.error("Error dispatching worker job:", err);
+  console.error("err:", JSON.stringify(err, null, 2));
+
+  // If the process exits with a non-zero error code then
+  // the task is retried
   process.exit(1);
 });
